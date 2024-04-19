@@ -8,11 +8,10 @@ import reducers from "./reducers";
 
 const store = createStore(reducers, compose(applyMiddleware(thunk)));
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  </Provider>,
-  document.getElementById("root")
+  </Provider>
 );

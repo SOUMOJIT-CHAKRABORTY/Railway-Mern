@@ -1,37 +1,76 @@
-import "./trainitem.css";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { createBook } from "../../api/index";
+import {
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+} from "@mui/material";
 
 const TrainItem = (props) => {
   const user = useSelector((state) => state.user);
 
-  const buttonClick = async (e) => {
-    e.preventDefault();
-    const { data } = await createBook(user.id, props.train._id);
-    console.log(data);
+  const buttonClick = async () => {
+    try {
+      const { data } = await createBook(user.id, props.train._id);
+      console.log(data);
+    } catch (error) {
+      console.error("Error booking train:", error);
+    }
   };
 
-  const buttonVisiblity = () => {
-    if (user.name) return { visibility: "visible" };
-    else return { visibility: "hidden" };
-  };
+  const isUserLoggedIn = !!user.name;
 
   return (
-    <div className="train-item">
-      <h2 id="train-name">{props.train.name}</h2>
-      <h3 id="start-destination">
-        From : {props.train.startpoint} - To: {props.train.destination}
-      </h3>
-      <div id="date-book">
-        <h3 id="startDate">
-          Starting Date : {props.train.startDate.slice(0, 10)}
-        </h3>
-        <h3 id="price">Ticket Price: {props.train.price}rs</h3>
-        <button style={buttonVisiblity()} onClick={buttonClick}>
-          Book Now
-        </button>
-      </div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+        padding: "8px",
+        // marginTop: "10px",
+      }}
+    >
+      <Card
+        variant="outlined"
+        style={{
+          maxWidth: "600px", // Set maximum width for the card
+          width: "100%",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+          transition: "transform 0.3s ease",
+          "&:hover": {
+            transform: "scale(1.03)",
+          },
+        }}
+      >
+        <CardContent style={{ paddingBottom: "16px" }}>
+          <Typography variant="h6" gutterBottom>
+            {props.train.name}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+            From: {props.train.startpoint} - To: {props.train.destination}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Starting Date: {props.train.startDate.slice(0, 10)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Ticket Price: {props.train.price} Rs
+          </Typography>
+        </CardContent>
+        <CardActions style={{ justifyContent: "flex-end" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={!isUserLoggedIn}
+            onClick={buttonClick}
+          >
+            Book Now
+          </Button>
+        </CardActions>
+      </Card>
     </div>
   );
 };

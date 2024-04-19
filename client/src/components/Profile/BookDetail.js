@@ -1,29 +1,44 @@
-import * as api from "../../api";
-import "./BookDetail.css";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Typography, Button, Card, CardContent, Grid } from "@mui/material";
+import { getTrain } from "../../api";
 
-export default (props) => {
+const BookDetail = (props) => {
   const [train, setTrain] = useState({});
 
   useEffect(() => {
-    api
-      .getTrain(props.book.train)
+    getTrain(props.book.train)
       .then((res) => setTrain(res))
       .catch((err) => console.log(err));
-  }, [setTrain]);
+  }, [props.book.train]);
+
+  const handleDelete = () => {
+    props.onDelete(props.book._id);
+  };
 
   return (
-    <div className="book-detail-item">
-      <h3>{train.name}</h3>
-      <h4>
-        from {train.startpoint} to {train.destination}
-      </h4>
-      <button
-        onClick={props.onDelete.bind(this, props.book._id)}
-        id="delete-button"
-      >
-        X
-      </button>
-    </div>
+    <Card variant="outlined" sx={{ marginBottom: 2 }}>
+      <CardContent>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item xs={8}>
+            <Typography variant="h6">{train.name}</Typography>
+            <Typography variant="body1">
+              From: {train.startpoint} to {train.destination}
+            </Typography>
+          </Grid>
+          <Grid item xs={4} textAlign="right">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleDelete}
+              sx={{ minWidth: 0 }}
+            >
+              X
+            </Button>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 };
+
+export default BookDetail;

@@ -2,46 +2,71 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getBooks } from "../../actions/book";
 import BookDetail from "./BookDetail";
-import * as api from "../../api";
-import "./Profile.css";
+import {
+  Container,
+  Typography,
+  Avatar,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+} from "@mui/material";
+import { deleteBook } from "../../api";
 
-export default () => {
+const profileImage =
+  "https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png";
+
+const Profile = () => {
   const user = useSelector((state) => state.user);
   const books = useSelector((state) => state.books);
   const dispatch = useDispatch();
 
-  const onDelete = (id) => {
-    const data = api.deleteBook(id);
-    console.log(data);
-  };
-
   useEffect(() => {
     dispatch(getBooks());
-  }, [dispatch, onDelete]);
+  }, [dispatch]);
 
-  const filt_books = books.filter((book) => {
-    return book.user.includes(user.id);
-  });
+  const onDelete = async (id) => {
+    const data = await deleteBook(id);
+    console.log(data);
+    dispatch(getBooks()); // Reload books after deletion
+  };
 
-  if (user.name) {
-    return (
-      <div className="profile-container">
-        <img
-          src="https://lh3.googleusercontent.com/proxy/AI9DJ23ca6YpqND4e6Riqp735r1tHfsAXezJWldUcxWz6lIUwVyACWxuZU2tQROiprSMN_J0sIJo3Laz0xMg1F0YYMQU0DkDrEbak8W4YDIH-pY3IW0E1h_8mgs"
-          alt="image unavailable"
-          width="100em"
-          hight="100em"
-        />
-        <h2 id="profile-name">{user.name}</h2>
-        <h2 className="user-info">Email : {user.email}</h2>
-        <h2 className="user-info">Phone Number : {user.phone}</h2>
-        <h2 id="trains-booked">Trains Booked: </h2>
-        {filt_books.map((book) => {
-          return <BookDetail key={book._id} book={book} onDelete={onDelete} />;
-        })}
-      </div>
-    );
-  } else {
-    return <h1>Not Logged In</h1>;
-  }
+  const filt_books = books.filter((book) => book.user.includes(user.id));
+
+  return (
+    <Container maxWidth="md" sx={{ paddingTop: 4 }}>
+      <Card>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4} sx={{ textAlign: "center" }}>
+              <Avatar
+                src={profileImage}
+                alt="Profile Image"
+                sx={{ width: 120, height: 120, margin: "auto" }}
+              />
+              <Typography variant="h5" component="h2" sx={{ marginTop: 2 }}>
+                {user.name}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "text.secondary" }}>
+                Email: {user.email}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "text.secondary" }}>
+                Phone Number: {user.phone}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <Typography variant="h4" component="h2" sx={{ marginBottom: 3 }}>
+                Trains Booked
+              </Typography>
+              {filt_books.map((book) => (
+                <BookDetail key={book._id} book={book} onDelete={onDelete} />
+              ))}
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </Container>
+  );
 };
+
+export default Profile;

@@ -13,6 +13,8 @@ import Profile from "./components/Profile/Profile";
 import Signup from "./components/User/Signup";
 import Admin from "./components/Admin/Admin";
 import NotFound from "./components/NotFound/NotFound";
+import ButtonAppBar from "./components/Navbar/Nav";
+import ChatBotIcon from "./components/Chat/ChatBotIcon";
 
 const App = () => {
   const token = Cookies.get("token");
@@ -29,7 +31,9 @@ const App = () => {
   return (
     <Router>
       {/* Navbar */}
-      <Navbar />
+      {/* <Navbar /> */}
+      <ButtonAppBar />
+      <ChatBotIcon />
 
       <Switch>
         {/* Train List */}

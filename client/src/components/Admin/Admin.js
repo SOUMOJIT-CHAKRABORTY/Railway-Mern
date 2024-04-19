@@ -1,10 +1,17 @@
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import * as api from "../../api";
-import "./Admin.css";
+import { useState } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Paper,
+} from "@mui/material";
+import { createTrain, deleteTrain } from "../../api";
 import Login from "../User/Login";
 
-export default (props) => {
+const Admin = () => {
   const user = useSelector((state) => state.user);
   const [deleteField, setDeleteField] = useState("");
   const [createFields, setCreateFields] = useState({
@@ -16,103 +23,172 @@ export default (props) => {
     price: "",
   });
 
-  const createSubmit = (e) => {
+  const handleCreateSubmit = (e) => {
     e.preventDefault();
-    api.createTrain(
-      createFields.name,
-      createFields.destination,
-      createFields.startPoint,
-      createFields.startDate,
-      createFields.reachDate,
-      createFields.price
-    );
-    setCreateFields({
-      name: "",
-      destination: "",
-      startPoint: "",
-      startDate: "",
-      reachDate: "",
-      price: "",
-    });
+    createTrain(createFields)
+      .then(() => {
+        setCreateFields({
+          name: "",
+          destination: "",
+          startPoint: "",
+          startDate: "",
+          reachDate: "",
+          price: "",
+        });
+      })
+      .catch((error) => console.error("Error creating train:", error));
   };
 
-  const deleteClick = (e) => {
+  const handleDeleteClick = (e) => {
     e.preventDefault();
-    console.log(deleteField);
-    api.deleteTrain(deleteField);
+    deleteTrain(deleteField)
+      .then(() => {
+        setDeleteField("");
+      })
+      .catch((error) => console.error("Error deleting train:", error));
   };
 
   if (user.is_admin) {
     return (
-      <div className="admin-container">
-        <h1 id="welcome-admin">Welcome Administrator</h1>
-        <form className="create-train-form">
-          <h2> Create Train</h2>
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, name: e.target.value })
-            }
-            value={createFields.name}
-            placeholder="Train Name"
-            type="text"
-          />
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, destination: e.target.value })
-            }
-            value={createFields.destination}
-            placeholder="Destination"
-            type="text"
-          />
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, startPoint: e.target.value })
-            }
-            value={createFields.startPoint}
-            placeholder="Start Point"
-            type="text"
-          />
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, startDate: e.target.value })
-            }
-            value={createFields.startDate}
-            placeholder="Start Date"
-            type="date"
-          />
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, reachDate: e.target.value })
-            }
-            value={createFields.reachDate}
-            placeholder="Reach Date"
-            type="date"
-          />
-          <input
-            onChange={(e) =>
-              setCreateFields({ ...createFields, price: e.target.value })
-            }
-            value={createFields.price}
-            placeholder="Price"
-            type="text"
-          />
-          <button onClick={createSubmit}>Create</button>
-        </form>
-        <form className="delete-train-form">
-          <h2>Delete Train</h2>
-          <input
-            value={deleteField}
-            onChange={(e) => setDeleteField(e.target.value)}
-            placeholder="Train ID"
-            type="text"
-          />
-          <button onClick={deleteClick}>Delete</button>
-        </form>
-      </div>
+      <Container maxWidth="md" sx={{ paddingTop: 4 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Welcome Administrator
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <form onSubmit={handleCreateSubmit}>
+                <Typography variant="h5" gutterBottom>
+                  Create Train
+                </Typography>
+                <TextField
+                  label="Train Name"
+                  fullWidth
+                  value={createFields.name}
+                  onChange={(e) =>
+                    setCreateFields({ ...createFields, name: e.target.value })
+                  }
+                  sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                  label="Destination"
+                  fullWidth
+                  value={createFields.destination}
+                  onChange={(e) =>
+                    setCreateFields({
+                      ...createFields,
+                      destination: e.target.value,
+                    })
+                  }
+                  sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                  label="Start Point"
+                  fullWidth
+                  value={createFields.startPoint}
+                  onChange={(e) =>
+                    setCreateFields({
+                      ...createFields,
+                      startPoint: e.target.value,
+                    })
+                  }
+                  sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                  label="Start Date"
+                  fullWidth
+                  type="date"
+                  value={createFields.startDate}
+                  onChange={(e) =>
+                    setCreateFields({
+                      ...createFields,
+                      startDate: e.target.value,
+                    })
+                  }
+                  InputLabelProps={{
+                    shrink: true, // Automatically shrink the label when there's content
+                  }}
+                  sx={{ marginBottom: 2 }}
+                />
+
+                <TextField
+                  label="Reach Date"
+                  fullWidth
+                  type="date"
+                  value={createFields.reachDate}
+                  onChange={(e) =>
+                    setCreateFields({
+                      ...createFields,
+                      reachDate: e.target.value,
+                    })
+                  }
+                  InputLabelProps={{
+                    shrink: true, // Automatically shrink the label when there's content
+                  }}
+                  sx={{ marginBottom: 2 }}
+                />
+                <TextField
+                  label="Price"
+                  fullWidth
+                  type="number"
+                  value={createFields.price}
+                  onChange={(e) =>
+                    setCreateFields({
+                      ...createFields,
+                      price: e.target.value,
+                    })
+                  }
+                  sx={{ marginBottom: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  fullWidth
+                >
+                  Create
+                </Button>
+              </form>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <form onSubmit={handleDeleteClick}>
+                <Typography variant="h5" gutterBottom>
+                  Delete Train
+                </Typography>
+                <TextField
+                  label="Train ID"
+                  fullWidth
+                  value={deleteField}
+                  onChange={(e) => setDeleteField(e.target.value)}
+                  sx={{ marginBottom: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="error"
+                  type="submit"
+                  fullWidth
+                >
+                  Delete
+                </Button>
+              </form>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
     );
   } else if (user.name) {
-    return <h1> Administrators only</h1>;
+    return (
+      <Container maxWidth="md" sx={{ paddingTop: 4 }}>
+        <Typography variant="h4" align="center">
+          Administrators only
+        </Typography>
+      </Container>
+    );
   } else {
     return <Login />;
   }
 };
+
+export default Admin;

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "http://localhost:5000/api/";
+const url = "http://localhost:8000/api/";
 
 // trains
 export const getTrains = async () => {
